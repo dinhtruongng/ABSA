@@ -1,7 +1,6 @@
 import pandas as pd
 import re
 import unicodedata
-import torch.nn as nn
 import torch
 import pandas as pd
 import torch
@@ -15,28 +14,26 @@ def basic(text):
 def handle_slang(text):
     slang_dict = {
         'ô kêi': ' ok ', 'okie': ' ok ', ' o kê ': ' ok ',
-        'okey': ' ok ', 'ôkê': ' ok ', 'oki': ' ok ', ' oke ':  ' ok ',' okay':' ok ','okê':' ok ', ' okie' : ' ok',
-        ' tks ': u' cám ơn ', 'thks': u' cám ơn ', 'thanks': u' cám ơn ', 'ths': u' cám ơn ', 'thank': u' cám ơn ',
-        '⭐': 'star ', '*': 'star ', '🌟': 'star ', '🎉': u' tích cực ',
-        'kg ': u' không ','not': u' không ', u' kg ': u' không ', '"k ': u' không ',' kh ':u' không ','kô':u' không ','hok':u' không ',' kp ': u' không phải ',u' kô ': u' không ', '"ko ': u' không ', u' ko ': u' không ', u' k ': u' không ', 'khong': u' không ', u' hok ': u' không ',
-        'he he': ' tích cực ','hehe': ' tích cực ','hihi': ' tích cực ', 'haha': ' tích cực ', 'hjhj': ' tích cực ',
-        ' lol ': ' tiêu cực ',' cc ': ' tiêu cực ','cute': u' dễ thương ','huhu': ' tiêu cực ', ' vs ': u' với ', 'wa': ' quá ', 'wá': u' quá', 'j': u' gì ', '“': ' ',
-        ' sz ': u' cỡ ', 'size': u' cỡ ', u' đx ': u' được ', 'dk': u' được ', 'dc': u' được ', 'đk': u' được ',
-        'đc': u' được ','authentic': u' chuẩn chính hãng ',u' aut ': u' chuẩn chính hãng ', u' auth ': u' chuẩn chính hãng ', 'thick': u' tích cực ', 'store': u' cửa hàng ',
-        'shop': u' cửa hàng ', 'sp': u' sản phẩm ', 'gud': u' tốt ','god': u' tốt ','wel done':' tốt ', 'good': u' tốt ', 'gút': u' tốt ',
-        'sấu': u' xấu ','gut': u' tốt ', u' tot ': u' tốt ', u' nice ': u' tốt ', 'perfect': 'rất tốt', 'bt': u' bình thường ',
-        'time': u' thời gian ', 'qá': u' quá ', u' ship ': u' giao hàng ', u' m ': u' mình ', u' mik ': u' mình ',
-        'ể': 'ể', 'product': 'sản phẩm', 'quality': 'chất lượng','chat':' chất ', 'excelent': 'hoàn hảo', 'bad': 'tệ','fresh': ' tươi ','sad': ' tệ ',
-        'date': u' hạn sử dụng ', 'hsd': u' hạn sử dụng ','quickly': u' nhanh ', 'quick': u' nhanh ','fast': u' nhanh ','delivery': u' giao hàng ',u' síp ': u' giao hàng ',
-        'beautiful': u' đẹp tuyệt vời ', u' tl ': u' trả lời ', u' r ': u' rồi ', u' shopE ': u' cửa hàng ',u' order ': u' đặt hàng ',
-        'chất lg': u' chất lượng ',u' sd ': u' sử dụng ',u' dt ': u' điện thoại ',u' nt ': u' nhắn tin ',u' tl ': u' trả lời ',u' sài ': u' xài ',u'bjo':u' bao giờ ',
-        'thik': u' thích ',u' sop ': u' cửa hàng ', ' fb ': ' facebook ', ' face ': ' facebook ', ' very ': u' rất ',u'quả ng ':u' quảng  ',
-        'dep': u' đẹp ',u' xau ': u' xấu ','delicious': u' ngon ', u'hàg': u' hàng ', u'qủa': u' quả ',
-        'iu': u' yêu ','fake': u' giả mạo ', 'trl': 'trả lời', '><': u' tích cực ',
-        ' por ': u' tệ ',' poor ': u' tệ ', 'ib':u' nhắn tin ', 'rep':u' trả lời ',u'fback':' feedback ','fedback':' feedback ',
-        ' h ' : u' giờ', 
-        ' e ' : u' em'
-    }
+        'okey': ' ok ', 'ôkê': ' ok ', 'oki': ' ok ', ' oke ':  ' ok ', ' okay': ' ok ', 'okê': ' ok ', ' okie' : ' ok',
+        ' tks ': ' cám ơn ', 'thks': ' cám ơn ', 'thanks': ' cám ơn ', 'ths': ' cám ơn ', 'thank': ' cám ơn ',
+         'kg ': ' không ', 'not': ' không ', ' kg ': ' không ', '"k ': ' không ', ' kh ': ' không ', 'kô': ' không ', 'hok': ' không ', ' kp ': ' không phải ', ' kô ': ' không ', '"ko ': ' không ', ' ko ': ' không ', ' k ': ' không ', 'khong': ' không ', ' hok ': ' không ',
+        'he he': ' tích cực ', 'hehe': ' tích cực ', 'hihi': ' tích cực ', 'haha': ' tích cực ', 'hjhj': ' tích cực ',
+        ' lol ': ' tiêu cực ', ' cc ': ' tiêu cực ', 'cute': ' dễ thương ', 'huhu': ' tiêu cực ', ' vs ': ' với ', 'wa': ' quá ', 'wá': ' quá', 'j': ' gì ', '“': ' ',
+        ' sz ': ' cỡ ', 'size': ' cỡ ', ' đx ': ' được ', 'dk': ' được ', 'dc': ' được ', 'đk': ' được ',
+        'đc': ' được ', 'authentic': ' chuẩn chính hãng ', ' aut ': ' chuẩn chính hãng ', ' auth ': ' chuẩn chính hãng ', 'thick': ' tích cực ', 'store': ' cửa hàng ',
+        'shop': ' cửa hàng ', 'sp': ' sản phẩm ', 'gud': ' tốt ', 'god': ' tốt ', 'wel done': ' tốt ', 'good': ' tốt ', 'gút': ' tốt ',
+        'sấu': ' xấu ', 'gut': ' tốt ', ' tot ': ' tốt ', ' nice ': ' tốt ', 'perfect': 'rất tốt', 'bt': ' bình thường ',
+        'time': ' thời gian ', 'qá': ' quá ', ' ship ': ' giao hàng ', ' m ': ' mình ', ' mik ': ' mình ',
+        'ể': 'ể', 'product': 'sản phẩm', 'quality': 'chất lượng', 'chat': ' chất ', 'excelent': 'hoàn hảo', 'bad': 'tệ', 'fresh': ' tươi ', 'sad': ' tệ ',
+        'date': ' hạn sử dụng ', 'hsd': ' hạn sử dụng ', 'quickly': ' nhanh ', 'quick': ' nhanh ', 'fast': ' nhanh ', 'delivery': ' giao hàng ', ' síp ': ' giao hàng ',
+        'beautiful': ' đẹp tuyệt vời ', ' tl ': ' trả lời ', ' r ': ' rồi ', ' shopE ': ' cửa hàng ', ' order ': ' đặt hàng ',
+        'chất lg': ' chất lượng ', ' sd ': ' sử dụng ', ' dt ': ' điện thoại ', ' nt ': ' nhắn tin ', ' tl ': ' trả lời ', ' sài ': ' xài ', 'bjo': ' bao giờ ',
+        'thik': ' thích ', ' sop ': ' cửa hàng ', ' fb ': ' facebook ', ' face ': ' facebook ', ' very ': ' rất ', 'quả ng ': ' quảng ',
+        'dep': ' đẹp ', ' xau ': ' xấu ', 'delicious': ' ngon ', 'hàg': ' hàng ', 'qủa': ' quả ',
+        'iu': ' yêu ', 'fake': ' giả mạo ', 'trl': 'trả lời', '><': ' tích cực ',
+        ' por ': ' tệ ', ' poor ': ' tệ ', 'ib': ' nhắn tin ', 'rep': ' trả lời ', 'fback': ' feedback ', 'fedback': ' feedback ',
+        ' h ' : ' giờ', ' e ' : ' em'}
+
     for slang, formal in slang_dict.items():
         text = re.sub(r'\b' + slang + r'\b', formal, text)
     return text
@@ -76,7 +73,7 @@ def label_to_tensor_v3(label: str, aspect_categories: list, polarity_to_idx: dic
             tensor[aspect_idx] = polarity_to_idx[polarity]  
     return tensor  
 
-def final_preprocess_v3(table):
+def final_preprocess_v1(table):
     aspect_categories = ['BATTERY', 'CAMERA', 'DESIGN', 'FEATURES', 'GENERAL', 
                      'PERFORMANCE', 'PRICE', 'SCREEN', 'SER&ACC', 'STORAGE']
     polarity_to_idx = { 'Positive': 0, 'Negative': 1, 'Neutral': 2 }
@@ -84,3 +81,13 @@ def final_preprocess_v3(table):
     preprocess_label(table)
     table['label'] = table['label'].apply(lambda x: label_to_tensor_v3(x, aspect_categories, polarity_to_idx))
     return table
+train_df = pd.read_csv('Data/Train.csv')
+test_df = pd.read_csv('Data/Test.csv')
+
+final_preprocess_v1(train_df)
+final_preprocess_v1(test_df)
+
+train_df.to_csv('Data/Train_final_lstm.csv')
+test_df.to_csv('Data/Test_final_lstm.csv')
+
+print(train_df.head())
