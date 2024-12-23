@@ -18,11 +18,11 @@ with open ('/Users/khangdoan/Documents/GitHub/ABSA/Model/BoW_for_ML', 'rb') as f
 
 x_train,x_test,y_train,y_test = train_test_split(BoW,np.asarray(y))
 
-param = {
-    'estimator__C': [0.1, 1, 10, 100],
-    'estimator__gamma': [1, 0.1, 0.01, 0.001],
-    'estimator__kernel': ['rbf', 'linear']
-}
+# param = {
+#     'estimator__C': [0.1, 1, 10, 100],
+#     'estimator__gamma': [1, 0.1, 0.01, 0.001],
+#     'estimator__kernel': ['rbf', 'linear']
+# }
 # This is for the hyperparameter tuning
 # model = MultiOutputClassifier(SVC())
 
