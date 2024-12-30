@@ -89,33 +89,18 @@ def predict_input(user_input, model, vectorizer):
     user_input = remove_emote(user_input)
     vector = vectorizer.transform([user_input])
     output = model.predict(vector)
-    output_dict = {'BATTERY':[],'CAMERA':[],'DESIGN':[],'FEATURES':[],'GENERAL':[],'OTHERS':[],'PERFORMANCE':[],'PRICE':[],'SCREEN':[],'SER&ACC':[],'STORAGE':[]}
+    output_list = [['BATTERY'],['CAMERA'],['DESIGN'],['FEATURES'],['GENERAL'],['PERFORMANCE'],['PRICE'],['SCREEN'],['SER&ACC'],['STORAGE']]
     output = output[0]
-    index = 0
-    
-    for keys in output_dict.keys():
-        if keys == 'OTHERS':
-            if output[index] == 1:
-                output_dict[keys].append("OTHERS")
-            else:
-                output_dict[keys].append("non")
-        else:
-            if output[index] == 1:
-                output_dict[keys].append("Positive")
-            elif output[index] == 0:
-                output_dict[keys].append("Neutral")
-            elif output[index] == -1:
-                output_dict[keys].append("Negative")
-            else:
-                output_dict[keys].append("non")
-        index += 1
-    for key in output_dict.keys():
-        if output_dict[key][0] != 'non' and output_dict[key][0] != 'OTHERS':
-            print(key + ": " + output_dict[key][0])
-        elif output_dict[key][0] == 'OTHERS':
-            print('OTHERS')
+    print(output)
+    for i in range(len(output_list)):
+        if output[i+10] == 2:
+            print(output_list[i][0], "positive")
+        elif output[i+10] == 0:
+            print(output_list[i][0], "neutral")
+        elif output[i+10] == 1:
+            print(output_list[i][0], "negative")
 
 def infer_ML_model(text):
     predict_input(text, loaded_model, vecto)
     return 0
-infer_ML_model("Máy đẹp, màn hình đẹp, pin trâu, cấu hình mạnh")
+infer_ML_model("dùng ok mượt k nóng đt có triệu mà mở max cấu hình ròi mà không nóng, nhân_viên nhiệt_tình")

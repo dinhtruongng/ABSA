@@ -58,12 +58,11 @@ def final_remove_emote(df):
 FULL = final_remove_emote(FULL)
 X = FULL['comment']
 y = FULL.iloc[:, -1]
-label = {'BATTERY':[],'CAMERA':[],'DESIGN':[],'FEATURES':[],'GENERAL':[],'OTHERS':[],'PERFORMANCE':[],'PRICE':[],'SCREEN':[],'SER&ACC':[],'STORAGE':[]}
+label = {'BATTERY_avai':[],'CAMERA_avai':[],'DESIGN_avai':[],'FEATURES_avai':[],'GENERAL_avai':[],'PERFORMANCE_avai':[],'PRICE_avai':[],'SCREEN_avai':[],'SER&ACC_avai':[],'STORAGE_avai':[],'BATTERY':[],'CAMERA':[],'DESIGN':[],'FEATURES':[],'GENERAL':[],'PERFORMANCE':[],'PRICE':[],'SCREEN':[],'SER&ACC':[],'STORAGE':[]}
 def spliY(y, label):
-    label = {'BATTERY':[],'CAMERA':[],'DESIGN':[],'FEATURES':[],'GENERAL':[],'OTHERS':[],'PERFORMANCE':[],'PRICE':[],'SCREEN':[],'SER&ACC':[],'STORAGE':[]}
     for i in y:
         x = i[:-1].split(";")
-        temp = list(label.keys())
+        temp = ['BATTERY','CAMERA','DESIGN','FEATURES','GENERAL','PERFORMANCE','PRICE','SCREEN','SER&ACC','STORAGE']
         for j in x:
             j = j.replace('{', '')
             j = j.replace('}', '')
@@ -72,18 +71,17 @@ def spliY(y, label):
             if t[0] != "OTHERS":
                 temp.remove(t[0])
                 if t[1] == "Positive":
-                    label[t[0]].append(1) #nhan xet tich cuc
+                    label[t[0]].append(2) #nhan xet tich cuc                    
+                    label[str(t[0]) + "_avai"].append(1)
                 elif t[1] == "Neutral":
                     label[t[0]].append(0) #nhan xet trung binh 
+                    label[str(t[0]) + "_avai"].append(1)
                 else:
-                    label[t[0]].append(-1) #nhan xet tieu cuc
-                    
-            else:
-                temp.remove(t[0])
-                label['OTHERS'].append(1) #phan loai other, ko lien quan
-                
+                    label[t[0]].append(1) #nhan xet tieu cuc
+                    label[str(t[0]) + "_avai"].append(1)
         for key in temp:
-                label[key].append(-2) #Ko de cap den trong phan nhan xet
+            label[key].append(-1) #Ko de cap den trong phan nhan xet
+            label[str(key) + "_avai"].append(0)
     return label
 y = spliY(y, label)
 y = pd.DataFrame(y)
