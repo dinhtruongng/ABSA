@@ -54,34 +54,6 @@ def final_remove_emote(df):
     df['comment'] = df['comment'].apply(remove_emote)    
     return df
 
-def spliY(y, label):
-    label = {'BATTERY':[],'CAMERA':[],'DESIGN':[],'FEATURES':[],'GENERAL':[],'OTHERS':[],'PERFORMANCE':[],'PRICE':[],'SCREEN':[],'SER&ACC':[],'STORAGE':[]}
-    for i in y:
-        x = i[:-1].split(";")
-        # print(x)
-        temp = list(label.keys())
-        for j in x:
-            j = j.replace('{', '')
-            j = j.replace('}', '')
-            t = j.split('#')
-            
-            if t[0] != "OTHERS":
-                temp.remove(t[0])
-                if t[1] == "Positive":
-                    label[t[0]].append(1) #nhan xet tich cuc
-                elif t[1] == "Neutral":
-                    label[t[0]].append(0) #nhan xet trung binh 
-                else:
-                    label[t[0]].append(-1) #nhan xet tieu cuc
-                    
-            else:
-                temp.remove(t[0])
-                label['OTHERS'].append(1) #phan loai other, ko lien quan
-                
-        for key in temp:
-                label[key].append(-2) #Ko de cap den trong phan nhan xet
-    return label
-
 def predict_input(user_input, model, vectorizer):
     # user_input = 'Máy đẹp, màn hình đẹp, pin trâu, cấu hình mạnh'
     user_input = user_input.lower()

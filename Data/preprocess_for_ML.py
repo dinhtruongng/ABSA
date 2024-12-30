@@ -58,8 +58,10 @@ def final_remove_emote(df):
 FULL = final_remove_emote(FULL)
 X = FULL['comment']
 y = FULL.iloc[:, -1]
-label = {'BATTERY_avai':[],'CAMERA_avai':[],'DESIGN_avai':[],'FEATURES_avai':[],'GENERAL_avai':[],'PERFORMANCE_avai':[],'PRICE_avai':[],'SCREEN_avai':[],'SER&ACC_avai':[],'STORAGE_avai':[],'BATTERY':[],'CAMERA':[],'DESIGN':[],'FEATURES':[],'GENERAL':[],'PERFORMANCE':[],'PRICE':[],'SCREEN':[],'SER&ACC':[],'STORAGE':[]}
+label = {'BATTERY':[],'CAMERA':[],'DESIGN':[],'FEATURES':[],'GENERAL':[],'PERFORMANCE':[],'PRICE':[],'SCREEN':[],'SER&ACC':[],'STORAGE':[]}
 def spliY(y, label):
+    label = {'BATTERY_avai':[],'CAMERA_avai':[],'DESIGN_avai':[],'FEATURES_avai':[],'GENERAL_avai':[],'PERFORMANCE_avai':[],'PRICE_avai':[],'SCREEN_avai':[],'SER&ACC_avai':[],'STORAGE_avai':[],'BATTERY':[],'CAMERA':[],'DESIGN':[],'FEATURES':[],'GENERAL':[],'PERFORMANCE':[],'PRICE':[],'SCREEN':[],'SER&ACC':[],'STORAGE':[]}
+    
     for i in y:
         x = i[:-1].split(";")
         temp = ['BATTERY','CAMERA','DESIGN','FEATURES','GENERAL','PERFORMANCE','PRICE','SCREEN','SER&ACC','STORAGE']
