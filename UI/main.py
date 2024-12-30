@@ -2,7 +2,7 @@ import gradio as gr
 from UI.infer_cae import infer_CAE_model
 from UI.infer_lstm import infer_LSTM_model
 from UI.infer_ml import infer_ML_model
-from UI.infer_lstm_attention import infer_LSTM_attention
+from UI.infer_lstm_attention import infer_LSTM_attention_model
 from Data.preprocess_for_input_infer import preprocess_text
 
 
@@ -10,7 +10,7 @@ model_infer_functions = {
     "LSTM Model": infer_LSTM_model,
     "Model manh vai ca loz": infer_CAE_model,
     "Machine Learning based Model":infer_ML_model,
-    "LSTM with attention": infer_LSTM_attention
+    "LSTM with attention": infer_LSTM_attention_model
 }
 
 # Define the main inference function to call the appropriate model function
