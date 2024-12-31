@@ -20,7 +20,7 @@ idx2sentiment = dict(zip(sentiment2idx.values(),sentiment2idx.keys()))
 
 tokenizer = AutoTokenizer.from_pretrained('bkai-foundation-models/vietnamese-bi-encoder')
 
-class Cae(nn.Module):
+class LSTMBase(nn.Module):
     def __init__(self, word_embedder, categories, polarities):
         super().__init__()
         self.word_embedder = word_embedder
@@ -142,8 +142,8 @@ embedding_layer = nn.Embedding(vocab_size, embedding_dim)
 
 categories = aspect2idx.keys()
 polarities = sentiment2idx.keys()
-model = Cae(embedding_layer, categories, polarities)
+model = LSTMBase(embedding_layer, categories, polarities)
 
-model.load_state_dict(torch.load("D:\code\intro_ai_ABSA\CAE_checkpoint50.pth",map_location=torch.device('cpu')))
+model.load_state_dict(torch.load("D:\code\intro_ai_ABSA\LSTMBase_checkpoint50.pth",map_location=torch.device('cpu')))
 model.eval()
 
