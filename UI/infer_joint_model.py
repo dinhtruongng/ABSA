@@ -23,7 +23,7 @@ vocab_size=len(vocab)
 categories=aspect2idx.keys()
 polarities=sentiment2idx.keys()
 
-class AttentionInHtt(nn.Module):
+class HierachyAttention(nn.Module):
     def __init__(self, in_features, out_features, bias=True, softmax=True):
         super().__init__()
         self.W = nn.Linear(in_features, out_features, bias)
@@ -45,7 +45,7 @@ class AttentionInHtt(nn.Module):
         else:
             return similarities
 
-def element_wise_mul(input1, input2, return_not_sum_result=False):
+def element_mul(input1, input2, return_not_sum_result=False):
         output = input1 * input2.unsqueeze(2)  # Ensure correct broadcasting
         result = output.sum(dim=1)
         if return_not_sum_result:
@@ -66,7 +66,7 @@ idx2sentiment = dict(zip(sentiment2idx.values(),sentiment2idx.keys()))
 # Initialize tokenizer
 tokenizer = AutoTokenizer.from_pretrained('bkai-foundation-models/vietnamese-bi-encoder')
 
-class CAE1(nn.Module):
+class JointModel(nn.Module):
     def __init__(self, word_embedder, categories, polarities):
         super().__init__()
         self.word_embedder = word_embedder
@@ -77,8 +77,8 @@ class CAE1(nn.Module):
 
         embed_dim = word_embedder.embedding_dim
         self.embedding_layer_fc = nn.Linear(embed_dim, embed_dim)
-        self.embedding_layer_aspect_attentions = nn.ModuleList([AttentionInHtt(embed_dim, embed_dim) for _ in range(self.category_num)])
-        self.lstm_layer_aspect_attentions = nn.ModuleList([AttentionInHtt(embed_dim, embed_dim) for _ in range(self.category_num)])
+        self.embedding_layer_aspect_attentions = nn.ModuleList([HierachyAttention(embed_dim, embed_dim) for _ in range(self.category_num)])
+        self.lstm_layer_aspect_attentions = nn.ModuleList([HierachyAttention(embed_dim, embed_dim) for _ in range(self.category_num)])
 
         self.lstm = nn.LSTM(embed_dim, embed_dim // 2, batch_first=True, bidirectional=True)
         self.dropout_after_embedding = nn.Dropout(0.5)
@@ -98,7 +98,7 @@ class CAE1(nn.Module):
             embedding_layer_aspect_attention = self.embedding_layer_aspect_attentions[i]
             alpha = embedding_layer_aspect_attention(embeddings, mask)
 
-            category_output = element_wise_mul(embeddings, alpha)
+            category_output = element_mul(embeddings, alpha)
             embedding_layer_category_outputs.append(category_output)
 
             category_output = category_output.unsqueeze(1)
@@ -115,7 +115,7 @@ class CAE1(nn.Module):
         for i in range(self.category_num):
             lstm_layer_aspect_attention = self.lstm_layer_aspect_attentions[i]
             alpha = lstm_layer_aspect_attention(lstm_result, mask)
-            category_output = element_wise_mul(lstm_result, alpha)
+            category_output = element_mul(lstm_result, alpha)
             lstm_layer_category_outputs.append(category_output)
 
             category_output = category_output.unsqueeze(1)
@@ -185,7 +185,7 @@ class CAE1(nn.Module):
         return output
 categories = aspect2idx.keys()
 polarities = sentiment2idx.keys()
-model1 = CAE1(embedding_layer, categories, polarities)
+model1 = JointModel(embedding_layer, categories, polarities)
 
 model1.load_state_dict(torch.load('D:\code\intro_ai_ABSA\CAE____\CAE_checkpoint41.pth',map_location=torch.device('cpu')))
 model1.eval()
