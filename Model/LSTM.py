@@ -65,7 +65,7 @@ labels_dev = list(dev['label'].apply(convert_label))
 dev_dataset = CustomTextDataset(sentences_dev, labels_dev, tokenizer)
 dev_dataloader = DataLoader(dev_dataset, shuffle=True, batch_size=128)
 
-class Cae(nn.Module):
+class LSTMBase(nn.Module):
     def __init__(self, word_embedder, categories, polarities):
         super().__init__()
         self.word_embedder = word_embedder
@@ -182,7 +182,7 @@ embedding_layer = nn.Embedding.from_pretrained(embedding_matrix, freeze=False)
 
 categories = aspect2idx.keys()
 polarities = sentiment2idx.keys()
-model = Cae(embedding_layer, categories, polarities)
+model = LSTMBase(embedding_layer, categories, polarities)
 optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
 model.to(device)
 
@@ -320,4 +320,4 @@ for epoch in range(epochs):
     print(f"dev_loss: {dev[0]} - dev_acd_f1: {dev[1]} - dev_sc_f1: {dev[2]}")
     
     if (epoch+1)%10==0 and epoch>8:
-        torch.save(model.state_dict(), f"CAE_checkpoint{epoch+1}.pth")
+        torch.save(model.state_dict(), f"LSTMBase_checkpoint{epoch+1}.pth")
