@@ -65,7 +65,7 @@ labels_dev = list(dev['label'].apply(convert_label))
 dev_dataset = CustomTextDataset(sentences_dev, labels_dev, tokenizer)
 dev_dataloader = DataLoader(dev_dataset, shuffle=True, batch_size=128)
 
-class AttentionInHtt(nn.Module):
+class HierachyAttention(nn.Module):
     def __init__(self, in_features, out_features, bias=True, softmax=True):
         super().__init__()
         self.W = nn.Linear(in_features, out_features, bias)
@@ -88,7 +88,7 @@ class AttentionInHtt(nn.Module):
             return similarities
             # return attention score
 
-def element_wise_mul(input1, input2, return_not_sum_result=False):
+def element_mul(input1, input2, return_not_sum_result=False):
         output = input1 * input2.unsqueeze(2)  # Ensure correct broadcasting
         result = output.sum(dim=1)
         if return_not_sum_result:
@@ -96,7 +96,7 @@ def element_wise_mul(input1, input2, return_not_sum_result=False):
         else:
             return result
 
-class Cae(nn.Module):
+class JointModel(nn.Module):
     def __init__(self, word_embedder, categories, polarities):
         super().__init__()
         self.word_embedder = word_embedder
@@ -107,8 +107,8 @@ class Cae(nn.Module):
 
         embed_dim = word_embedder.embedding_dim
         self.embedding_layer_fc = nn.Linear(embed_dim, embed_dim)
-        self.embedding_layer_aspect_attentions = nn.ModuleList([AttentionInHtt(embed_dim, embed_dim) for _ in range(self.category_num)])
-        self.lstm_layer_aspect_attentions = nn.ModuleList([AttentionInHtt(embed_dim, embed_dim) for _ in range(self.category_num)])
+        self.embedding_layer_aspect_attentions = nn.ModuleList([HierachyAttention(embed_dim, embed_dim) for _ in range(self.category_num)])
+        self.lstm_layer_aspect_attentions = nn.ModuleList([HierachyAttention(embed_dim, embed_dim) for _ in range(self.category_num)])
 
         self.lstm = nn.LSTM(embed_dim, embed_dim // 2, batch_first=True, bidirectional=True)
         self.dropout_after_embedding = nn.Dropout(0.5)
@@ -128,7 +128,7 @@ class Cae(nn.Module):
             embedding_layer_aspect_attention = self.embedding_layer_aspect_attentions[i]
             alpha = embedding_layer_aspect_attention(embeddings, mask)
 
-            category_output = element_wise_mul(embeddings, alpha)
+            category_output = element_mul(embeddings, alpha)
             embedding_layer_category_outputs.append(category_output)
 
             category_output = category_output.unsqueeze(1)
@@ -145,7 +145,7 @@ class Cae(nn.Module):
         for i in range(self.category_num):
             lstm_layer_aspect_attention = self.lstm_layer_aspect_attentions[i]
             alpha = lstm_layer_aspect_attention(lstm_result, mask)
-            category_output = element_wise_mul(lstm_result, alpha)
+            category_output = element_mul(lstm_result, alpha)
             lstm_layer_category_outputs.append(category_output)
 
             category_output = category_output.unsqueeze(1)
@@ -239,7 +239,7 @@ embedding_layer = nn.Embedding.from_pretrained(embedding_matrix, freeze=False)
 
 categories = aspect2idx.keys()
 polarities = sentiment2idx.keys()
-model = Cae(embedding_layer, categories, polarities)
+model = JointModel(embedding_layer, categories, polarities)
 optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
 model.to(device)
 
@@ -377,4 +377,4 @@ for epoch in range(epochs):
     print(f"dev_loss: {dev[0]} - dev_acd_f1: {dev[1]} - dev_sc_f1: {dev[2]}")
     
     if epoch%10==0 and epoch>0:
-        torch.save(model.state_dict(), f"CAE_checkpoint{epoch}.pth")
+        torch.save(model.state_dict(), f"JointModel_checkpoint{epoch}.pth")
