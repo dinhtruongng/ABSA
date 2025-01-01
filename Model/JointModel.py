@@ -244,18 +244,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
 model.to(device)
 
 def calculate_macro_metrics(all_pred_categories, all_pred_sentiments, all_true_labels, num_aspect=10):
-    """
-    Calculate macro-averaged Precision, Recall, and F1-score for Aspect Detection and Sentiment Detection.
 
-    Parameters:
-    - all_pred_categories: List of predicted categories (Aspect Detection) for each instance
-    - all_pred_sentiments: List of predicted sentiments (Sentiment Detection) for each instance
-    - all_true_labels: List of true labels with aspect and sentiment information
-    - num_aspect: The number of aspect labels (to split the labels correctly)
-
-    Returns:
-    - Dictionary with macro-averaged Precision, Recall, and F1-score for Aspect and Sentiment Detection
-    """
 
     # Separate true labels into aspects and sentiments based on num_aspect
     true_acd = [label[:num_aspect] for label in all_true_labels]  # True Aspect Detection labels
